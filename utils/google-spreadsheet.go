@@ -106,3 +106,44 @@ func GoogleSpreadSheetSRV() *sheets.Service {
 
 	return srv;
 }
+
+func GetGoogleSpreadSheetNameById(srv *sheets.Service, sheetId int64, spreadsheetId string) (string, error) {
+	// Retrieve the properties of all sheets in the spreadsheet
+	response, err := srv.Spreadsheets.Get(spreadsheetId).Fields("sheets(properties(sheetId,title))").Do()
+	if err != nil {
+		return "", fmt.Errorf("unable to retrieve spreadsheet data: %v", err)
+	}
+
+	// Iterate through the sheets to find the one with the matching sheetId
+	for _, v := range response.Sheets {
+		prop := v.Properties
+		if prop.SheetId == int64(sheetId) {
+			return prop.Title, nil
+		}
+	}
+
+	// Return an error if no matching sheet is found
+	return "", fmt.Errorf("no sheet found with id: %d", sheetId)
+}
+
+func AppendValueToTheSheet(srv *sheets.Service, sheetId int64, spreadsheetId string, id string, name string, email string) (string, error) {
+	sheetName, err := GetGoogleSpreadSheetNameById(srv, sheetId, spreadsheetId)
+	if err != nil {
+		return "", fmt.Errorf("unable to retrieve sheet name: %v", err)
+	}
+
+	row := &sheets.ValueRange{
+		Values: [][]interface{}{{id, name, email}},
+	}
+
+	// Append the values to the sheet
+	response, err := srv.Spreadsheets.Values.Append(spreadsheetId, sheetName, row).
+		ValueInputOption("USER_ENTERED").
+		InsertDataOption("INSERT_ROWS").
+		Context(context.Background()).Do()
+	if err != nil {
+		return "", fmt.Errorf("unable to save spreadsheet data: %v", err)
+	}
+
+	return response.Updates.UpdatedRange, nil
+}

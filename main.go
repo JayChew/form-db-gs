@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -25,13 +26,19 @@ func main() {
 	// name := "Jay Chew";
 	// email := "jaychew.3753@gmail.com"
 	// _, form := formService.Create(name, email)
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env config file")
 	}
-	
-	utils.GoogleSpreadSheetSRV();
-	
+	srv := utils.GoogleSpreadSheetSRV();
+	response, err := utils.AppendValueToTheSheet(srv, 0, "16Fm__SoBsDr9WQenGt206G8CSiFzt33Cgm1LHkmnCr4", "1", "Jay Chew", "jaychew.3753@gmail.com")
+	if err != nil {
+		log.Fatalf("Unable to append values to the sheet: %v", err)
+	}
+
+	fmt.Printf("Appended values to the range: %s\n", response)
+
 	r := chi.NewRouter()
 	
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {});
