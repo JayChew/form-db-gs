@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -107,7 +108,19 @@ func GoogleSpreadSheetSRV() *sheets.Service {
 	return srv;
 }
 
+// GetGoogleSpreadSheetNameById retrieves the name of a sheet by its ID from a Google Spreadsheet.
 func GetGoogleSpreadSheetNameById(srv *sheets.Service, sheetId int64, spreadsheetId string) (string, error) {
+	// Validate inputs
+	if srv == nil {
+		return "", fmt.Errorf("sheets service is nil")
+	}
+	if sheetId <= 0 {
+		return "", fmt.Errorf("invalid sheet ID: %d", sheetId)
+	}
+	if strings.TrimSpace(spreadsheetId) == "" {
+		return "", fmt.Errorf("spreadsheet ID is empty")
+	}
+
 	// Retrieve the properties of all sheets in the spreadsheet
 	response, err := srv.Spreadsheets.Get(spreadsheetId).Fields("sheets(properties(sheetId,title))").Do()
 	if err != nil {
@@ -115,21 +128,70 @@ func GetGoogleSpreadSheetNameById(srv *sheets.Service, sheetId int64, spreadshee
 	}
 
 	// Iterate through the sheets to find the one with the matching sheetId
-	for _, v := range response.Sheets {
-		prop := v.Properties
-		if prop.SheetId == int64(sheetId) {
+	for _, sheet := range response.Sheets {
+		prop := sheet.Properties
+		if prop.SheetId == sheetId {
+			log.Printf("Found sheet: %s (ID: %d)", prop.Title, prop.SheetId)
 			return prop.Title, nil
 		}
 	}
 
 	// Return an error if no matching sheet is found
-	return "", fmt.Errorf("no sheet found with id: %d", sheetId)
+	return "", fmt.Errorf("no sheet found with ID: %d", sheetId)
 }
 
-func AppendValueToTheSheet(srv *sheets.Service, sheetId int64, spreadsheetId string, id string, name string, email string) (string, error) {
-	sheetName, err := GetGoogleSpreadSheetNameById(srv, sheetId, spreadsheetId)
+// GetGoogleSpreadSheetIdByName retrieves the ID of a sheet by its name from a Google Spreadsheet.
+func GetGoogleSpreadSheetIdByName(srv *sheets.Service, sheetName string, spreadsheetId string) (int64, error) {
+	// Validate inputs
+	if srv == nil {
+		return -1, fmt.Errorf("sheets service is nil")
+	}
+	if strings.TrimSpace(sheetName) == "" {
+		return -1, fmt.Errorf("sheet name is empty")
+	}
+	if strings.TrimSpace(spreadsheetId) == "" {
+		return -1, fmt.Errorf("spreadsheet ID is empty")
+	}
+
+	// Retrieve the properties of all sheets in the spreadsheet
+	response, err := srv.Spreadsheets.Get(spreadsheetId).Fields("sheets(properties(sheetId,title))").Do()
 	if err != nil {
-		return "", fmt.Errorf("unable to retrieve sheet name: %v", err)
+		return -1, fmt.Errorf("unable to retrieve spreadsheet data: %v", err)
+	}
+
+	// Iterate through the sheets to find the one with the matching sheetName
+	for _, sheet := range response.Sheets {
+		prop := sheet.Properties
+		if prop.Title == sheetName {
+			log.Printf("Found sheet: %s (ID: %d)", prop.Title, prop.SheetId)
+			return prop.SheetId, nil
+		}
+	}
+
+	// Return an error if no matching sheet is found
+	return -1, fmt.Errorf("no sheet found with name: %s", sheetName)
+}
+
+func CreateNewGoogleSpreadSheet(srv *sheets.Service, sheetName string) string {
+	spreadsheet := &sheets.Spreadsheet{
+    Properties: &sheets.SpreadsheetProperties{
+      Title: sheetName,
+    },
+	}
+
+	spreadsheet, err := srv.Spreadsheets.Create(spreadsheet).Do()
+	if err != nil {
+		log.Fatalf("Unable to create spreadsheet. %v", err)
+	}
+	
+	fmt.Printf("Spreadsheet ID: %s\n", spreadsheet.SpreadsheetId)
+	return spreadsheet.SpreadsheetId
+}
+
+func AppendValueToTheGoogleSpreadSheet(srv *sheets.Service, sheetName string, spreadsheetId string, id string, name string, email string) (string, error) {
+	_, err := GetGoogleSpreadSheetIdByName(srv, sheetName, spreadsheetId)
+	if err != nil {
+		return "", fmt.Errorf("unable to retrieve sheet id: %v", err)
 	}
 
 	row := &sheets.ValueRange{

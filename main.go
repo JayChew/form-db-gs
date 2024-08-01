@@ -31,8 +31,10 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env config file")
 	}
+
 	srv := utils.GoogleSpreadSheetSRV();
-	response, err := utils.AppendValueToTheSheet(srv, 0, "16Fm__SoBsDr9WQenGt206G8CSiFzt33Cgm1LHkmnCr4", "1", "Jay Chew", "jaychew.3753@gmail.com")
+	SpreadsheetId := utils.CreateNewGoogleSpreadSheet(srv, "Sheet1");
+	response, err := utils.AppendValueToTheGoogleSpreadSheet(srv, "Sheet1", SpreadsheetId, "1", "Jay Chew", "jaychew.3753@gmail.com")
 	if err != nil {
 		log.Fatalf("Unable to append values to the sheet: %v", err)
 	}
