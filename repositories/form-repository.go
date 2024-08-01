@@ -11,20 +11,21 @@ type FormRepo struct {
 	DB *sqlx.DB
 }
 
-func (c *FormRepo) Create(form models.FormModel) bool {
-	_, err := c.DB.Exec(
-		`INSERT INTO forms (
-			name,
-			email
-		) VALUES (?,?)`,
+func (c *FormRepo) Create(form models.FormModel) (int64, error) {
+	result, err := c.DB.Exec(
+		`INSERT INTO forms (name, email) VALUES (?, ?)`,
 		form.Name,
 		form.Email,
 	)
 
 	if err != nil {
-		fmt.Println(err)
-		return false
+		return 0, fmt.Errorf("failed to insert form: %w", err)
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("failed to get last insert id: %w", err)
 	}
 	
-	return true;
+	return id, nil
 }

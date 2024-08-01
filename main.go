@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/JayChew/form-db-gs.git/core"
 	"github.com/JayChew/form-db-gs.git/repositories"
@@ -29,16 +28,21 @@ func main() {
 
 	name := "Jay Chew";
 	email := "jaychew.3753@gmail.com"
-	_, form := formService.Create(name, email)
+	lastInsertId, err := formService.Create(name, email)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
 
-	err := godotenv.Load()
+	err = godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env config file")
 	}
 
 	srv := utils.GoogleSpreadSheetSRV();
 	SpreadsheetId := "16Fm__SoBsDr9WQenGt206G8CSiFzt33Cgm1LHkmnCr4"
-	response, err := utils.AppendValueToTheGoogleSpreadSheet(srv, "Sheet1", SpreadsheetId, strconv.Itoa(form.ID), form.Name, form.Email)
+	var rows [][]interface{}
+	rows = append(rows, []interface{}{lastInsertId, name, email})
+	response, err := utils.AppendValuesToGoogleSpreadSheet(srv, "Sheet1", SpreadsheetId, rows)
 	if err != nil {
 		log.Fatalf("Unable to append values to the sheet: %v", err)
 	}

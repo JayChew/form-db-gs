@@ -7,5 +7,5 @@ type FormModel struct {
 }
 
 type FormInterface interface {
-	Create(FormModel) bool
+	Create(FormModel) (int64, error)
 }

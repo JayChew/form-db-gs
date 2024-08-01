@@ -16,8 +16,7 @@ func InitalizeDB(host string, port string, user string, password string, name st
 	mysqlPassword := password
 	mysqlTable := name
 
-	var connection string
-	connection = mysqlUsername +
+	connection := mysqlUsername +
 		":" +
 		mysqlPassword +
 		"@tcp(" +

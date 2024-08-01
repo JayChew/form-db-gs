@@ -188,14 +188,14 @@ func CreateNewGoogleSpreadSheet(srv *sheets.Service, sheetName string) string {
 	return spreadsheet.SpreadsheetId
 }
 
-func AppendValueToTheGoogleSpreadSheet(srv *sheets.Service, sheetName string, spreadsheetId string, id string, name string, email string) (string, error) {
+func AppendValuesToGoogleSpreadSheet(srv *sheets.Service, sheetName string, spreadsheetId string, rows [][]interface{}) (string, error) {
 	_, err := GetGoogleSpreadSheetIdByName(srv, sheetName, spreadsheetId)
 	if err != nil {
 		return "", fmt.Errorf("unable to retrieve sheet id: %v", err)
 	}
 
 	row := &sheets.ValueRange{
-		Values: [][]interface{}{{id, name, email}},
+		Values: rows,
 	}
 
 	// Append the values to the sheet
