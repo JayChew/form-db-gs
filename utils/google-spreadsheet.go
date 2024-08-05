@@ -188,10 +188,27 @@ func CreateNewGoogleSpreadSheet(srv *sheets.Service, sheetName string) string {
 	return spreadsheet.SpreadsheetId
 }
 
-func AppendValuesToGoogleSpreadSheet(srv *sheets.Service, sheetName string, spreadsheetId string, rows [][]interface{}) (string, error) {
+func ClearGoogleSpreadSheet(srv *sheets.Service, sheetName string, spreadsheetId string) error {
+	clearRange := sheetName + "!A:Z" // Adjust range as necessary
+	_, err := srv.Spreadsheets.Values.Clear(spreadsheetId, clearRange, &sheets.ClearValuesRequest{}).Context(context.Background()).Do()
+	if err != nil {
+		return fmt.Errorf("unable to clear spreadsheet data: %v", err)
+	}
+	return nil
+}
+
+func AppendValuesToGoogleSpreadSheet(srv *sheets.Service, sheetName string, spreadsheetId string, rows [][]interface{}, clearSheet bool) (string, error) {
 	_, err := GetGoogleSpreadSheetIdByName(srv, sheetName, spreadsheetId)
 	if err != nil {
 		return "", fmt.Errorf("unable to retrieve sheet id: %v", err)
+	}
+
+	// Clear existing data if clearSheet is true
+	if clearSheet {
+		err := ClearGoogleSpreadSheet(srv, sheetName, spreadsheetId)
+		if err != nil {
+			return "", fmt.Errorf("unable to clear existing data: %v", err)
+		}
 	}
 
 	row := &sheets.ValueRange{

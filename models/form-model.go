@@ -8,4 +8,5 @@ type FormModel struct {
 
 type FormInterface interface {
 	Create(FormModel) (int64, error)
+	GetAll() ([]FormModel, error)
 }

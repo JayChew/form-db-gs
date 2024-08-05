@@ -29,3 +29,30 @@ func (c *FormRepo) Create(form models.FormModel) (int64, error) {
 	
 	return id, nil
 }
+
+func (c *FormRepo) GetAll() ([]models.FormModel, error) {
+	var forms []models.FormModel
+	var query = `SELECT * FROM forms`
+
+	rows, err := c.DB.Queryx(query)
+	if err != nil {
+		return forms, fmt.Errorf("failed to select forms: %w", err)
+	}
+	defer func() {
+		closeErr := rows.Close()
+		if closeErr != nil {
+			err = fmt.Errorf("failed to close rows: %w", closeErr)
+		}
+	}()
+
+	for rows.Next() {
+		var form models.FormModel
+		err := rows.StructScan(&form)
+		if err != nil {
+			return forms, fmt.Errorf("failed to append form: %w", err)
+		}
+		forms = append(forms, form)
+	}
+
+	return forms, nil
+}
