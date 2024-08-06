@@ -40,7 +40,7 @@ func GoogleSpreadSheetSRV() *sheets.Service {
 	return srv;
 }
 
-// GetGoogleSpreadSheetNameById retrieves the name of a sheet by its ID from a Google Spreadsheet.
+// retrieves the name of a sheet by its ID from a Google Spreadsheet.
 func GetGoogleSpreadSheetNameById(srv *sheets.Service, sheetId int64, spreadsheetId string) (string, error) {
 	// Validate inputs
 	if srv == nil {
@@ -72,7 +72,7 @@ func GetGoogleSpreadSheetNameById(srv *sheets.Service, sheetId int64, spreadshee
 	return "", fmt.Errorf("no sheet found with ID: %d", sheetId)
 }
 
-// GetGoogleSpreadSheetIdByName retrieves the ID of a sheet by its name from a Google Spreadsheet.
+// retrieves the ID of a sheet by its name from a Google Spreadsheet.
 func GetGoogleSpreadSheetIdByName(srv *sheets.Service, sheetName string, spreadsheetId string) (int64, error) {
 	// Validate inputs
 	if srv == nil {
