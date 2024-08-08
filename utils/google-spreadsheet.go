@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	"strings"
 
 	"golang.org/x/oauth2/google"
@@ -141,4 +142,40 @@ func AppendValuesToGoogleSpreadSheet(srv *sheets.Service, sheetName string, spre
 	}
 
 	return response.Updates.UpdatedRange, nil
+}
+
+func GenerateRows(tableData interface{}) [][]interface{} {
+	var rows [][]interface{}
+	
+	// Get the reflection value of tableData
+	v := reflect.ValueOf(tableData)
+
+	// Check if tableData is a slice and if it has elements
+	if v.Kind() != reflect.Slice || v.Len() == 0 {
+		return rows
+	}
+
+	// Get the type of the elements in the slice
+	elemType := v.Index(0).Type()
+	headers := []string{}
+	for i := 0; i < elemType.NumField(); i++ {
+		headers = append(headers, elemType.Field(i).Name)
+	}
+	headerRow := make([]interface{}, len(headers))
+	for i, h := range headers {
+		headerRow[i] = h
+	}
+	rows = append(rows, headerRow)
+
+	// Populate rows with data from each element in the slice
+	for i := 0; i < v.Len(); i++ {
+		elem := v.Index(i)
+		dataRow := make([]interface{}, elem.NumField())
+		for j := 0; j < elem.NumField(); j++ {
+			dataRow[j] = elem.Field(j).Interface()
+		}
+		rows = append(rows, dataRow)
+	}
+	
+	return rows
 }
