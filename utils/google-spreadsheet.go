@@ -38,7 +38,7 @@ func GoogleSpreadSheetSRV() *sheets.Service {
 		log.Fatal(err)
 	}
 
-	return srv;
+	return srv
 }
 
 // retrieves the name of a sheet by its ID from a Google Spreadsheet.
@@ -146,7 +146,7 @@ func AppendValuesToGoogleSpreadSheet(srv *sheets.Service, sheetName string, spre
 
 func GenerateRows(tableData interface{}) [][]interface{} {
 	var rows [][]interface{}
-	
+
 	// Get the reflection value of tableData
 	v := reflect.ValueOf(tableData)
 
@@ -159,7 +159,12 @@ func GenerateRows(tableData interface{}) [][]interface{} {
 	elemType := v.Index(0).Type()
 	headers := []string{}
 	for i := 0; i < elemType.NumField(); i++ {
-		headers = append(headers, elemType.Field(i).Name)
+		// Extract the `col` tag value for human-readable headers
+		colTag := elemType.Field(i).Tag.Get("col")
+		if colTag == "" {
+			colTag = elemType.Field(i).Name // Fallback to the field name if `col` tag is not present
+		}
+		headers = append(headers, colTag)
 	}
 	headerRow := make([]interface{}, len(headers))
 	for i, h := range headers {
@@ -172,10 +177,23 @@ func GenerateRows(tableData interface{}) [][]interface{} {
 		elem := v.Index(i)
 		dataRow := make([]interface{}, elem.NumField())
 		for j := 0; j < elem.NumField(); j++ {
-			dataRow[j] = elem.Field(j).Interface()
+			field := elem.Field(j)
+
+			// Convert each field to a string, ensuring special characters are preserved
+			var fieldString string
+			if field.Kind() == reflect.String {
+				fieldString = field.String()
+				if len(fieldString) > 0 && fieldString[0] == '+' {
+					fieldString = "'" + fieldString // Add single quote to preserve the plus sign
+				}
+			} else {
+				fieldString = fmt.Sprintf("%v", field.Interface()) // Convert other types using fmt.Sprintf
+			}
+			dataRow[j] = fieldString
 		}
 		rows = append(rows, dataRow)
 	}
-	
+
+	fmt.Println(rows)
 	return rows
 }

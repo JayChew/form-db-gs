@@ -18,9 +18,6 @@ func (c *FormRepo) Create(form models.FormModel) (int64, error) {
     fmt.Println("Error generating query:", err)
   }
 
-  fmt.Println("Generated Query:", query)
-  fmt.Println("Values:", values)
-
 	result, err := c.DB.Exec(
 		query,
 		values...,

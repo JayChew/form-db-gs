@@ -1,10 +1,10 @@
 package models
 
 type FormModel struct {
-	ID int `db:"id" json:"-"`
-	Name string `db:"name" json:"name"`
-	Email string `db:"email" json:"email"`
-	ContactNumber string `db:"contact_number" json:"contact_number"`
+	ID            int    `db:"id" json:"-" col:"Id"`
+	Name          string `db:"name" json:"name" col:"Name"`
+	Email         string `db:"email" json:"email" col:"Email"`
+	ContactNumber string `db:"contact_number" json:"contact_number" col:"Contact number"`
 }
 
 type FormInterface interface {
