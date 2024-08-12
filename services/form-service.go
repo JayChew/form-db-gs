@@ -12,10 +12,11 @@ type FormService struct {
 	IForm models.FormInterface
 }
 
-func (c *FormService) Create(name string, email string) (int64, error) {
+func (c *FormService) Create(name string, email string, contact_number string) (int64, error) {
 	form := models.FormModel{
 		Name: name,
 		Email: email,
+		ContactNumber: contact_number,
 	}
 
 	return c.IForm.Create(form);

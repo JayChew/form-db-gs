@@ -31,7 +31,8 @@ func main() {
 
 	name := "Jay Chew";
 	email := "jaychew.3753@gmail.com"
-	_, err = formService.Create(name, email)
+	contact_number := "+60129533753"
+	_, err = formService.Create(name, email, contact_number)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
