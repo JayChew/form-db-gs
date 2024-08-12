@@ -3,6 +3,7 @@ package repositories
 import (
 	"fmt"
 
+	"github.com/JayChew/form-db-gs.git/helpers"
 	"github.com/JayChew/form-db-gs.git/models"
 	"github.com/jmoiron/sqlx"
 )
@@ -12,10 +13,17 @@ type FormRepo struct {
 }
 
 func (c *FormRepo) Create(form models.FormModel) (int64, error) {
+	query, values, err := helpers.GenerateInsertIntoQuery(form, "forms")
+  if err != nil {
+    fmt.Println("Error generating query:", err)
+  }
+
+  fmt.Println("Generated Query:", query)
+  fmt.Println("Values:", values)
+
 	result, err := c.DB.Exec(
-		`INSERT INTO forms (name, email) VALUES (?, ?)`,
-		form.Name,
-		form.Email,
+		query,
+		values...,
 	)
 
 	if err != nil {
