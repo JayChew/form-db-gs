@@ -3,7 +3,6 @@ package repositories
 import (
 	"fmt"
 
-	"github.com/JayChew/form-db-gs.git/helpers"
 	"github.com/JayChew/form-db-gs.git/models"
 	"github.com/jmoiron/sqlx"
 )
@@ -12,28 +11,28 @@ type FormRepo struct {
 	DB *sqlx.DB
 }
 
-func (c *FormRepo) Create(form models.FormModel) (int64, error) {
-	query, values, err := helpers.GenerateInsertIntoQuery(form, "forms")
-  if err != nil {
-    fmt.Println("Error generating query:", err)
-  }
+// func (c *FormRepo) Create(form models.FormModel) (int64, error) {
+// 	query, values, err := helpers.GenerateInsertIntoQuery(form, "forms")
+//   if err != nil {
+//     fmt.Println("Error generating query:", err)
+//   }
 
-	result, err := c.DB.Exec(
-		query,
-		values...,
-	)
+// 	result, err := c.DB.Exec(
+// 		query,
+// 		values...,
+// 	)
 
-	if err != nil {
-		return 0, fmt.Errorf("failed to insert form: %w", err)
-	}
+// 	if err != nil {
+// 		return 0, fmt.Errorf("failed to insert form: %w", err)
+// 	}
 
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, fmt.Errorf("failed to get last insert id: %w", err)
-	}
-	
-	return id, nil
-}
+// 	id, err := result.LastInsertId()
+// 	if err != nil {
+// 		return 0, fmt.Errorf("failed to get last insert id: %w", err)
+// 	}
+
+// 	return id, nil
+// }
 
 func (c *FormRepo) GetAll() ([]models.FormModel, error) {
 	var forms []models.FormModel

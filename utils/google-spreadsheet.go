@@ -20,13 +20,13 @@ func GoogleSpreadSheetSRV() *sheets.Service {
 	// get bytes from base64 encoded google service accounts key
 	credBytes, err := base64.StdEncoding.DecodeString(os.Getenv("GOOGLE_SERVICE_ACCOUNT_KEY"))
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("get bytes from base64 encoded google service accounts key failed: %v", err)
 	}
 
 	// authenticate and get configuration
 	config, err := google.JWTConfigFromJSON(credBytes, "https://www.googleapis.com/auth/spreadsheets")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("authenticate and get configuration failed: %v", err)
 	}
 
 	// create client with config and context
@@ -35,7 +35,7 @@ func GoogleSpreadSheetSRV() *sheets.Service {
 	// create new service using client
 	srv, err := sheets.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("create new service using client failed: %v", err)
 	}
 
 	return srv
@@ -178,22 +178,40 @@ func GenerateRows(tableData interface{}) [][]interface{} {
 		dataRow := make([]interface{}, elem.NumField())
 		for j := 0; j < elem.NumField(); j++ {
 			field := elem.Field(j)
+			fieldString := fmt.Sprintf("%v", field.Interface())
 
-			// Convert each field to a string, ensuring special characters are preserved
-			var fieldString string
-			if field.Kind() == reflect.String {
-				fieldString = field.String()
-				if len(fieldString) > 0 && fieldString[0] == '+' {
-					fieldString = "'" + fieldString // Add single quote to preserve the plus sign
-				}
-			} else {
-				fieldString = fmt.Sprintf("%v", field.Interface()) // Convert other types using fmt.Sprintf
+			// Add a single quote to preserve the plus sign at the start, if needed
+			if len(fieldString) > 0 && fieldString[0] == '+' {
+				fieldString = "'" + fieldString
 			}
+
+			//fieldString = helpers.FormatDateTime(fieldString)
+
+			// Escape special characters
+			fieldString = escapeSpecialCharacters(fieldString)
+
 			dataRow[j] = fieldString
 		}
 		rows = append(rows, dataRow)
 	}
 
-	fmt.Println(rows)
+	// fmt.Println(rows)
+
 	return rows
+}
+
+// Function to escape special characters
+func escapeSpecialCharacters(input string) string {
+	// Check if the string starts with '+'
+	if len(input) >= 2 && input[:2] == "'+" {
+		// If the string starts with '+', return it as-is
+		return input
+	}
+
+	// Replace special characters with their escaped versions (this is a basic example)
+	input = strings.ReplaceAll(input, "'", "''")    // Escape single quotes
+	input = strings.ReplaceAll(input, "\"", "\\\"") // Escape double quotes
+	// Add more escaping rules as needed
+
+	return input
 }

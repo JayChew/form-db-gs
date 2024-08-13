@@ -19,7 +19,7 @@ func main() {
 		"root",
 		"root",
 		"form_db_gs",
-	);
+	)
 
 	formRepo := &repositories.FormRepo{DB: db}
 	formService := services.FormService{IForm: formRepo}
@@ -29,19 +29,19 @@ func main() {
 		log.Fatal("Error loading .env config file")
 	}
 
-	name := "Jay Chew";
-	email := "jaychew.3753@gmail.com"
-	contact_number := "+60129533753"
-	_, err = formService.Create(name, email, contact_number)
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
+	// name := "Jay Chew";
+	// email := "jaychew.3753@gmail.com"
+	// contact_number := "+60129533753"
+	// _, err = formService.Create(name, email, contact_number)
+	// if err != nil {
+	// 	log.Fatalf("%v", err)
+	// }
 
 	formService.SyncToGoogleSpreadSheet()
 
 	r := chi.NewRouter()
-	
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {});
 
-	http.ListenAndServe(":8085", nosurf.New(r));
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {})
+
+	http.ListenAndServe(":8085", nosurf.New(r))
 }

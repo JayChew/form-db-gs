@@ -12,28 +12,28 @@ type FormService struct {
 	IForm models.FormInterface
 }
 
-func (c *FormService) Create(name string, email string, contact_number string) (int64, error) {
-	form := models.FormModel{
-		Name: name,
-		Email: email,
-		ContactNumber: contact_number,
-	}
+// func (c *FormService) Create(name string, email string, contact_number string) (int64, error) {
+// 	form := models.FormModel{
+// 		Name: name,
+// 		Email: email,
+// 		ContactNumber: contact_number,
+// 	}
 
-	return c.IForm.Create(form);
-}
+// 	return c.IForm.Create(form);
+// }
 
 func (c *FormService) GetAll() ([]models.FormModel, error) {
-	return c.IForm.GetAll();
+	return c.IForm.GetAll()
 }
 
 func (c *FormService) SyncToGoogleSpreadSheet() {
-	forms, err := c.GetAll();
+	forms, err := c.GetAll()
 	if err != nil {
 		log.Fatalf("Unable to get forms. %v", err)
 	}
-	
-	clearSheet := true;
-	srv := utils.GoogleSpreadSheetSRV();
+
+	srv := utils.GoogleSpreadSheetSRV()
+	clearSheet := true
 	SpreadsheetId := "16Fm__SoBsDr9WQenGt206G8CSiFzt33Cgm1LHkmnCr4"
 	response, err := utils.AppendValuesToGoogleSpreadSheet(srv, "Sheet1", SpreadsheetId, utils.GenerateRows(forms), clearSheet)
 	if err != nil {
