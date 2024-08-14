@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/JayChew/form-db-gs.git/helpers"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
@@ -106,11 +107,41 @@ func GetGoogleSpreadSheetIdByName(srv *sheets.Service, sheetName string, spreads
 }
 
 func ClearGoogleSpreadSheet(srv *sheets.Service, sheetName string, spreadsheetId string) error {
-	clearRange := sheetName + "!A:Z" // Adjust range as necessary
-	_, err := srv.Spreadsheets.Values.Clear(spreadsheetId, clearRange, &sheets.ClearValuesRequest{}).Context(context.Background()).Do()
+	// clearRange := sheetName + "!A:Z" // Adjust range as necessary
+	// _, err := srv.Spreadsheets.Values.Clear(spreadsheetId, clearRange, &sheets.ClearValuesRequest{}).Context(context.Background()).Do()
+	// if err != nil {
+	// 	return fmt.Errorf("unable to clear spreadsheet data: %v", err)
+	// }
+	// return nil
+
+	sheetId, err := GetGoogleSpreadSheetIdByName(srv, sheetName, spreadsheetId)
+	if err != nil {
+		return fmt.Errorf("unable to retrieve sheet id: %v", err)
+	}
+
+	// Create a request to clear the entire sheet
+	requests := []*sheets.Request{
+		{
+			UpdateCells: &sheets.UpdateCellsRequest{
+				Range: &sheets.GridRange{
+					SheetId: sheetId,
+				},
+				Fields: "*",
+			},
+		},
+	}
+
+	// Create the batch update request
+	batchUpdateRequest := &sheets.BatchUpdateSpreadsheetRequest{
+		Requests: requests,
+	}
+
+	// Execute the request
+	_, err = srv.Spreadsheets.BatchUpdate(spreadsheetId, batchUpdateRequest).Context(context.Background()).Do()
 	if err != nil {
 		return fmt.Errorf("unable to clear spreadsheet data: %v", err)
 	}
+
 	return nil
 }
 
@@ -178,24 +209,24 @@ func GenerateRows(tableData interface{}) [][]interface{} {
 		dataRow := make([]interface{}, elem.NumField())
 		for j := 0; j < elem.NumField(); j++ {
 			field := elem.Field(j)
-			fieldString := fmt.Sprintf("%v", field.Interface())
 
-			// Add a single quote to preserve the plus sign at the start, if needed
-			if len(fieldString) > 0 && fieldString[0] == '+' {
-				fieldString = "'" + fieldString
+			switch field.Kind() {
+			case reflect.String:
+				fieldString := field.String()
+
+				fieldString = helpers.FormatDateTime(fieldString)
+
+				// Escape special characters
+				fieldString = escapeSpecialCharacters(fieldString)
+
+				dataRow[j] = fieldString
+			default:
+				// Directly append the field value to the dataRow
+				dataRow[j] = field.Interface()
 			}
-
-			//fieldString = helpers.FormatDateTime(fieldString)
-
-			// Escape special characters
-			fieldString = escapeSpecialCharacters(fieldString)
-
-			dataRow[j] = fieldString
 		}
 		rows = append(rows, dataRow)
 	}
-
-	// fmt.Println(rows)
 
 	return rows
 }
