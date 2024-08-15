@@ -50,13 +50,15 @@ func (c *FormRepo) GetAll() ([]models.FormModel, error) {
 	}()
 
 	for rows.Next() {
-		var form models.FormModel
+		form := models.FormModel{}
 		err := rows.StructScan(&form)
 		if err != nil {
 			return forms, fmt.Errorf("failed to append form: %w", err)
 		}
 		forms = append(forms, form)
 	}
+
+	fmt.Println(forms)
 
 	return forms, nil
 }

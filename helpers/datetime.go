@@ -1,33 +1,26 @@
 package helpers
 
 import (
-	"regexp"
+	"reflect"
 	"time"
 )
 
-// Regular expressions for date-time and time-only formats
-var (
-	// Strict ISO 8601 regex pattern
-	iso8601Regex = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$`)
-	// Time-only format (HH:MM:SS)
-	timeOnlyRegex = regexp.MustCompile(`^\d{2}:\d{2}:\d{2}$`)
-)
+// Define format strings for MySQL date/time types
+var DbDateTimeFormats = map[string]string{
+	"DATE":      "2006-01-02",          // MySQL DATE format
+	"DATETIME":  "2006-01-02 15:04:05", // MySQL DATETIME format
+	"TIMESTAMP": "2006-01-02 15:04:05", // MySQL TIMESTAMP format
+	"TIME":      "15:04:05",            // MySQL TIME format
+}
 
-func FormatDateTime(input string) string {
-	// Check if the string is in ISO 8601 format
-	if iso8601Regex.MatchString(input) {
-		// Attempt to parse as date-time
-		t, err := time.Parse(time.RFC3339, input)
-		if err == nil {
-			return t.Format("2006-01-02 15:04:05")
-		}
+// FormatTimeField formats a time.Time field based on its mysql_format tag
+func FormatDateTimeBasedOnTag(field reflect.Value, dateTimeFormatTag string) interface{} {
+	// Get the format string from MysqlDateTimeFormats map
+	format, ok := DbDateTimeFormats[dateTimeFormatTag]
+	if ok {
+		return field.Interface().(time.Time).Format(format)
 	}
 
-	// Check if the input is in time-only format (HH:MM:SS)
-	if timeOnlyRegex.MatchString(input) {
-		return input
-	}
-
-	// If parsing fails or not a recognized format, return as is
-	return input
+	// Handle unknown format tags
+	return field.Interface().(time.Time).Format("2006-01-02") // default format
 }

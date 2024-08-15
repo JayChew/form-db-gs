@@ -8,6 +8,7 @@ import (
 	"os"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/JayChew/form-db-gs.git/helpers"
 	"golang.org/x/oauth2/google"
@@ -209,12 +210,15 @@ func GenerateRows(tableData interface{}) [][]interface{} {
 		dataRow := make([]interface{}, elem.NumField())
 		for j := 0; j < elem.NumField(); j++ {
 			field := elem.Field(j)
+			fieldType := elem.Type().Field(j)
 
 			switch field.Kind() {
+			case reflect.Struct:
+				if field.Type() == reflect.TypeOf(time.Time{}) {
+					dataRow[j] = helpers.FormatDateTimeBasedOnTag(field, fieldType.Tag.Get("mysql_format"))
+				}
 			case reflect.String:
 				fieldString := field.String()
-
-				fieldString = helpers.FormatDateTime(fieldString)
 
 				// Escape special characters
 				fieldString = escapeSpecialCharacters(fieldString)
