@@ -3,28 +3,41 @@ package models
 import "time"
 
 type FormModel struct {
-	ID            int       `db:"id" json:"id" col:"Id"`
-	CharCol       string    `db:"char_col" json:"char_col" col:"Char Column"`
-	VarcharCol    string    `db:"varchar_col" json:"varchar_col" col:"Varchar Column"`
-	TextCol       string    `db:"text_col" json:"text_col" col:"Text Column"`
-	MediumtextCol string    `db:"mediumtext_col" json:"mediumtext_col" col:"Mediumtext Column"`
-	LongtextCol   string    `db:"longtext_col" json:"longtext_col" col:"Longtext Column"`
-	TinyintCol    int8      `db:"tinyint_col" json:"tinyint_col" col:"Tinyint Column"`
-	SmallintCol   int16     `db:"smallint_col" json:"smallint_col" col:"Smallint Column"`
-	MediumintCol  int32     `db:"mediumint_col" json:"mediumint_col" col:"Mediumint Column"`
-	BigintCol     int64     `db:"bigint_col" json:"bigint_col" col:"Bigint Column"`
-	DecimalCol    float64   `db:"decimal_col" json:"decimal_col" col:"Decimal Column"`
-	FloatCol      float32   `db:"float_col" json:"float_col" col:"Float Column"`
-	DoubleCol     float64   `db:"double_col" json:"double_col" col:"Double Column"`
-	DateCol       time.Time `db:"date_col" json:"date_col" col:"Date Column" mysql_format:"DATE"`
-	DatetimeCol   time.Time `db:"datetime_col" json:"datetime_col" col:"Datetime Column" mysql_format:"DATETIME"`
-	TimestampCol  time.Time `db:"timestamp_col" json:"timestamp_col" col:"Timestamp Column" mysql_format:"TIMESTAMP"`
-	TimeCol       string    `db:"time_col" json:"time_col" col:"Time Column" mysql_format:"TIME"`
-	YearCol       int       `db:"year_col" json:"year_col" col:"Year Column"`
-	EnumCol       string    `db:"enum_col" json:"enum_col" col:"Enum Column"`
-	SetCol        string    `db:"set_col" json:"set_col" col:"Set Column"`
-	JsonCol       string    `db:"json_col" json:"json_col" col:"Json Column"`
-	Url           string    `db:"url" json:"url" col:"Url"`
+	ID              int       `db:"id" json:"id" col:"Id"`
+	ShortCode       string    `db:"short_code" json:"shortCode" col:"Short Code"`
+	FormName        string    `db:"form_name" json:"formName" col:"Form Name"`
+	Description     string    `db:"description" json:"description" col:"Description"`
+	Notes           string    `db:"notes" json:"notes" col:"Notes"`
+	History         string    `db:"history" json:"history" col:"History"`
+	Status          int8      `db:"status" json:"status" col:"Status"`
+	Priority        int16     `db:"priority" json:"priority" col:"Priority"`
+	SubmissionCount int64     `db:"submission_count" json:"submissionCount" col:"Submission Count"`
+	FormID          int64     `db:"form_id" json:"formId" col:"Form Id"`
+	Cost            float64   `db:"cost" json:"cost" col:"Cost"`
+	Rating          float32   `db:"rating" json:"rating" col:"Rating"`
+	AverageScore    float64   `db:"average_score" json:"averageScore" col:"Average Score"`
+	CreatedAt       time.Time `db:"created_at" json:"createdAt" col:"CreatedAt" mysql_format:"DATE"`
+	UpdatedAt       time.Time `db:"updated_at" json:"updatedAt" col:"UpdatedAt" mysql_format:"DATETIME"`
+	LastSubmission  time.Time `db:"last_submission" json:"lastSubmission" col:"LastSubmission" mysql_format:"TIMESTAMP"`
+	FormTime        string    `db:"form_time" json:"formTime" col:"FormTime" mysql_format:"TIME"`
+
+	Category       string `db:"category" json:"category" col:"Category"`
+	Tags           string `db:"tags" json:"tags" col:"Tags"`
+	StrongURL      string `db:"strong_url" json:"strongUrl" col:"Strong Url"`
+	ContactNumber  string `db:"contact_number" json:"contactNumber" col:"Contact Number"`
+	Email          string `db:"email" json:"email" col:"Email"`
+	NRIC           string `db:"nric" json:"nric" col:"NRIC"`
+	CurrencyCode   string `db:"currency_code" json:"currencyCode" col:"Currency Code"`
+	CurrencySymbol string `db:"currency_symbol" json:"currencySymbol" col:"Currency Symbol"`
+
+	AddressLine   string  `db:"address_line" json:"addressLine" col:"Address Line"`
+	City          string  `db:"city" json:"city" col:"City"`
+	StateProvince string  `db:"state_province" json:"stateProvince" col:"State Province"`
+	PostalCode    string  `db:"postal_code" json:"postalCode" col:"Postal Code"`
+	Country       string  `db:"country" json:"country" col:"Country"`
+	AddressType   string  `db:"address_type" json:"addressType" col:"Address Type"`
+	Latitude      float64 `db:"latitude" json:"latitude" col:"Latitude"`
+	Longitude     float64 `db:"longitude" json:"longitude" col:"Longitude"`
 }
 
 type FormInterface interface {
