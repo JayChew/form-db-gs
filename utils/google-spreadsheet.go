@@ -220,6 +220,10 @@ func GenerateRows(tableData interface{}) [][]interface{} {
 			case reflect.String:
 				fieldString := field.String()
 
+				if len(fieldString) > 0 && fieldString[0] == '+' {
+					fieldString = "'" + fieldString
+				}
+
 				// Escape special characters
 				fieldString = escapeSpecialCharacters(fieldString)
 
