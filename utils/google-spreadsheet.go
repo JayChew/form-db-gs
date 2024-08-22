@@ -225,7 +225,7 @@ func GenerateRows(tableData interface{}) [][]interface{} {
 				}
 
 				// Escape special characters
-				fieldString = escapeSpecialCharacters(fieldString)
+				//fieldString = escapeSpecialCharacters(fieldString)
 
 				dataRow[j] = fieldString
 			default:

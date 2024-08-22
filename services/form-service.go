@@ -12,15 +12,11 @@ type FormService struct {
 	IForm models.FormInterface
 }
 
-// func (c *FormService) Create(name string, email string, contact_number string) (int64, error) {
-// 	form := models.FormModel{
-// 		Name: name,
-// 		Email: email,
-// 		ContactNumber: contact_number,
-// 	}
+func (c *FormService) Create(req models.CreateFormRequest) (int64, error) {
+	form := req.ToFormModel()
 
-// 	return c.IForm.Create(form);
-// }
+	return c.IForm.Create(form)
+}
 
 func (c *FormService) GetAll() ([]models.FormModel, error) {
 	return c.IForm.GetAll()

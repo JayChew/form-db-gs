@@ -3,8 +3,10 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/JayChew/form-db-gs.git/core"
+	"github.com/JayChew/form-db-gs.git/models"
 	"github.com/JayChew/form-db-gs.git/repositories"
 	"github.com/JayChew/form-db-gs.git/services"
 	"github.com/go-chi/chi"
@@ -29,13 +31,44 @@ func main() {
 		log.Fatal("Error loading .env config file")
 	}
 
-	// name := "Jay Chew";
-	// email := "jaychew.3753@gmail.com"
-	// contact_number := "+60129533753"
-	// _, err = formService.Create(name, email, contact_number)
-	// if err != nil {
-	// 	log.Fatalf("%v", err)
-	// }
+	formReq := models.CreateFormRequest{
+		ShortCode:       "SC001",
+		FormName:        "Sample Form",
+		Description:     "This is a sample form description.",
+		Notes:           "Some notes about the form.",
+		History:         "Form creation history.",
+		Status:          1, // Example status
+		Priority:        2, // Example priority
+		SubmissionCount: 100,
+		FormID:          12345,
+		Cost:            29.99,
+		Rating:          4.5,
+		AverageScore:    4.2,
+		CreatedAt:       time.Now().AddDate(0, 0, -10), // 10 days ago
+		UpdatedAt:       time.Now(),
+		LastSubmission:  time.Now(),
+		FormTime:        "15:30:00", // Example time
+		Category:        "Support",
+		Tags:            "Urgent,Important",
+		StrongURL:       "http://example.com",
+		ContactNumber:   "+60129533753",
+		Email:           "example@example.com",
+		NRIC:            "S1234567A",
+		CurrencyCode:    "USD",
+		CurrencySymbol:  "$",
+		AddressLine:     "123 Main St",
+		City:            "Sample City",
+		StateProvince:   "Sample State",
+		PostalCode:      "12345",
+		Country:         "Sample Country",
+		AddressType:     "Home",
+		Latitude:        37.7749,
+		Longitude:       -122.4194,
+	}
+	_, err = formService.Create(formReq)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
 
 	formService.SyncToGoogleSpreadSheet()
 
