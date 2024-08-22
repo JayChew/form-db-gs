@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/JayChew/form-db-gs.git/models"
+	"github.com/JayChew/form-db-gs.git/examples/db-to-spreadsheet/models"
 	"github.com/JayChew/form-db-gs.git/utils"
 )
 

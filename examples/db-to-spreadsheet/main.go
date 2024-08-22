@@ -2,16 +2,13 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"time"
 
-	"github.com/JayChew/form-db-gs.git/core"
-	"github.com/JayChew/form-db-gs.git/models"
-	"github.com/JayChew/form-db-gs.git/repositories"
-	"github.com/JayChew/form-db-gs.git/services"
-	"github.com/go-chi/chi"
+	"github.com/JayChew/form-db-gs.git/examples/db-to-spreadsheet/core"
+	"github.com/JayChew/form-db-gs.git/examples/db-to-spreadsheet/models"
+	"github.com/JayChew/form-db-gs.git/examples/db-to-spreadsheet/repositories"
+	"github.com/JayChew/form-db-gs.git/examples/db-to-spreadsheet/services"
 	"github.com/joho/godotenv"
-	"github.com/justinas/nosurf"
 )
 
 func main() {
@@ -71,10 +68,4 @@ func main() {
 	}
 
 	formService.SyncToGoogleSpreadSheet()
-
-	r := chi.NewRouter()
-
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {})
-
-	http.ListenAndServe(":8085", nosurf.New(r))
 }

@@ -3,8 +3,8 @@ package repositories
 import (
 	"fmt"
 
-	"github.com/JayChew/form-db-gs.git/helpers"
-	"github.com/JayChew/form-db-gs.git/models"
+	"github.com/JayChew/form-db-gs.git/examples/db-to-spreadsheet/helpers"
+	"github.com/JayChew/form-db-gs.git/examples/db-to-spreadsheet/models"
 	"github.com/jmoiron/sqlx"
 )
 
